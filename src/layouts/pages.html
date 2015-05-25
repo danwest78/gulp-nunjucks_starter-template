@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gulp - Nunjucks template</title>
+
+    <link href="styles/main.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="js/vendor-predom.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div id="wrapper">
+        <header>
+        <a href="#" class="brand"><img src="http://placehold.it/200x100"></a>
+        <h1>Gulp - Nunjucks starter template</h1>
+      </header>
+
+        {% block main %}{% endblock %}
+
+    </div>
+
+    <!-- postdom js -->
+    <script src="js/vendor-postdom.js"></script>
+    <!-- main js -->
+    <script src="../../js/main.min.js"></script>
+</body>
+</html>

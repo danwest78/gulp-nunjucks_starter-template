@@ -1,0 +1,13 @@
+{
+  "name": "gulp-nunjucks-project",
+  "version": "0.0.1",
+  "authors": [
+    "Dan West"
+  ],
+  "license": "Contributor License Agreement",
+  "private": true,
+  "dependencies": {
+    "jquery"            : "~1.11.2",
+    "respond"           : "~1.4.2"
+  }
+}
