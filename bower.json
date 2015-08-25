@@ -8,6 +8,6 @@
   "private": true,
   "dependencies": {
     "jquery"            : "~1.11.2",
-    "respond"           : "~1.4.2"
+    "html5shiv"            : "~3.7.3"
   }
 }

@@ -1,139 +1,485 @@
-/*!
- * gulp
- */
+(function (gulp, gulpLoadPlugins, undefined) {
+    'use strict';
 
-// Load plugins
-var gulp = require('gulp'),
-    sass = require('gulp-ruby-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
-    minifycss = require('gulp-minify-css'),
-    jshint = require('gulp-jshint'),
-    uglify = require('gulp-uglify'),
-    imagemin = require('gulp-imagemin'),
-    rename = require('gulp-rename'),
-    concat = require('gulp-concat'),
-    notify = require('gulp-notify'),
-    cache = require('gulp-cache'),
-    livereload = require('gulp-livereload'),
-    del = require('del'),
-    connect = require('gulp-connect'),
-    shelljs = require('shelljs'),
-    nunjucksRender = require('gulp-nunjucks-render');
 
-// Styles
-gulp.task('styles', function() {
-  return sass('src/styles/main.scss', { style: 'expanded' })
-    .pipe(autoprefixer('last 2 version'))
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(minifycss())
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(notify({ message: 'Styles task complete' }));
-});
+    var $ = gulpLoadPlugins({ pattern: '*', lazy: true }),
+        _ = { src: 'src', dist: 'dist', vendor: 'src/vendor', tmp: '.tmp', tmpBuild: '.tmp-build'};
+        // path = require('path');
 
-// Scripts
-gulp.task('js', function() {
-  return gulp.src('src/js/*.js')
-    .pipe(jshint('.jshintrc'))
-    .pipe(jshint.reporter('default'))
-    .pipe(concat('main.js'))
-    .pipe(gulp.dest('dist/js'))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/js'))
-    .pipe(notify({ message: 'Scripts task complete' }));
-});
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ jsonlint
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-// Images
-gulp.task('images', function() {
-  return gulp.src('src/images/**/*')
-    .pipe(cache(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true })))
-    .pipe(gulp.dest('dist/images'))
-    .pipe(notify({ message: 'Images task complete' }));
-});
-
-// Fonts
-gulp.task('fonts', function() {
-  return gulp.src('src/fonts/*')
-    .pipe(gulp.dest('dist/fonts'));
-});
-
-// Templating
-gulp.task('layout', function () {
-    nunjucksRender.nunjucks.configure(['src/']);
-    return gulp.src('src/*.html')
-        .pipe(nunjucksRender())
-        .pipe(gulp.dest('dist'));
-});
-
-// Concat predom
-gulp.task('concat-predom', function() {
-  return gulp.src([
-    'src/vendor/html5shiv/dist/html5shiv.min.js',
-    'src/vendor/respond/src/respond.js'
-  ])
-    .pipe(concat('vendor-predom.js'))
-    .pipe(gulp.dest('dist/js'));
-});
-
-// Concat postdom
-gulp.task('concat-postdom', function() {
-  return gulp.src([
-    'src/vendor/jquery/dist/jquery.min.js'
-  ])
-    .pipe(concat('vendor-postdom.js'))
-    .pipe(gulp.dest('dist/js'));
-});
-
-// Connect
-gulp.task('connect', ['layout'], function() {
-    connect.server({
-        root: 'dist',
-        port: 4567
+    gulp.task('jsonlint', function() {
+        return gulp.src([
+            'package.json',
+            'bower.json',
+            _.src + '/manifest.json',
+            '.bowerrc',
+            '.jshintrc',
+            '.jscs.json'
+        ])
+        .pipe($.plumber())
+        .pipe($.jsonlint()).pipe($.jsonlint.reporter())
+        .pipe($.notify({
+            message: '<%= options.date %> ✓ jsonlint: <%= file.relative %>',
+            templateOptions: {
+                date: new Date()
+            }
+        }));
     });
-});
 
-// Environ
-gulp.task('localhost', function() {
-    shelljs.exec('open http://localhost:4567');
-});
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ jshint
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-// Server
-gulp.task('server', ['connect', 'styles'], function() {
-    gulp.start('localhost');
-});
+    gulp.task('jshint', function() {
+        return gulp.src([
+            'gulpfile.js',
+            _.src + '/js/**/*.js',
+            '!' + _.src + '/vendor/**/*.js',
+            'test/spec/{,*/}*.js'
+        ])
+        .pipe($.plumber())
+        .pipe($.jshint('.jshintrc'))
+        .pipe($.jshint.reporter('default'))
+        // .pipe($.jscs())
+        .pipe($.notify({
+            message: '<%= options.date %> ✓ jshint: <%= file.relative %>',
+            templateOptions: {
+                date: new Date()
+            }
+        }));
+    });
 
-// Clean
-gulp.task('clean', function(cb) {
-    del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
-});
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ styles
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-// Default task
-gulp.task('default', ['clean'], function() {
-    gulp.start('styles', 'js', 'images', 'layout', 'fonts');
-});
+    gulp.task('styles', function() {
+        return $.rubySass(_.src + '/scss/', {
+                sourcemap: true
+            })
+            .on('error', $.util.log)
+            .pipe(gulp.dest(_.src + '/css'))
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ styles: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
 
-// Watch
-gulp.task('watch', ['server'], function() {
+    gulp.task('styles-build', function() {
+        return $.rubySass(_.src + '/scss/', {
+                sourcemap: false,
+                style: 'compressed'
+            })
+            .on('error', $.util.log)
+            .pipe(gulp.dest(_.dist + '/css'))
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ styles: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
 
-  gulp.start('styles', 'js', 'images', 'fonts', 'layout', 'concat-postdom', 'concat-predom');
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ js
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-  // Watch .scss files
-  gulp.watch('src/styles/**/*.scss', ['styles']);
+    gulp.task('js-build', function() {
+        return gulp.src(
+              _.src + '/js/main.js'
+          )
+          .pipe($.jshint('.jshintrc'))
+          .pipe($.jshint.reporter('default'))
+          .pipe($.concat('main.js'))
+          .on('error', $.util.log)
+          .pipe(gulp.dest(_.dist + '/js'))
+          .pipe($.uglify())
+          .pipe(gulp.dest(_.dist + '/js'))
+          .pipe($.notify({ message: 'Scripts task complete' }));
+    });
 
-  // Watch .js files
-  gulp.watch('src/js/*.js', ['js', 'concat-postdom', 'concat-predom']);
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ js predom
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-  // Watch image files
-  gulp.watch('src/images/**/*', ['images']);
+    gulp.task('concat-predom', function() {
 
-  // Watch layout files
-  gulp.watch(['src/*.html', 'src/**/*.html'], ['layout']);
+        // Add files here
+        return gulp.src([
+              _.src + '/vendor/html5shiv/dist/html5shiv.min.js'
+          ])
+          .pipe($.concat('vendor-predom.js'))
+          .pipe(gulp.dest(_.src + '/js'))
+          .on('error', $.util.log);
+    });
 
-  // Create LiveReload server
-  livereload.listen();
+    gulp.task('concat-predom-build', function() {
 
-  // Watch any files in dist/, reload on change
-  gulp.watch(['dist/**']).on('change', livereload.changed, connect.reload());
+        // Add files here
+        return gulp.src([
+              _.src + '/vendor/html5shiv/dist/html5shiv.min.js'
+          ])
+          .pipe($.concat('vendor-predom.js'))
+          .pipe(gulp.dest(_.dist + '/js'))
+          .pipe($.uglify())
+          .pipe(gulp.dest(_.dist + '/js'))
+          .on('error', $.util.log);
+    });
 
-});
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ js postdom
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('concat-postdom', function() {
+
+        // Add files here
+        return gulp.src([
+              _.src + '/vendor/jquery/dist/jquery.min.js'
+          ])
+          .pipe($.concat('vendor-postdom.js'))
+          .pipe(gulp.dest(_.src + '/js'))
+          .on('error', $.util.log);
+    });
+
+    gulp.task('concat-postdom-build', function() {
+
+        // Add files here
+        return gulp.src([
+              _.src + '/vendor/jquery/dist/jquery.min.js'
+          ])
+          .pipe($.concat('vendor-postdom.js'))
+          .pipe(gulp.dest(_.dist + '/js'))
+          .pipe($.uglify())
+          .pipe(gulp.dest(_.dist + '/js'))
+          .on('error', $.util.log);
+    });
+
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ svg
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('svg', function() {
+        return gulp.src([
+            _.src + '/img/**/*.svg',
+            _.src + '/css/**/*.svg'
+        ])
+        .pipe($.plumber())
+        .pipe($.svgmin([{ removeDoctype: false }, { removeComments: false }]))
+        .pipe(gulp.dest(_.dist + '/img')).pipe($.size()).pipe($.notify({
+            message: '<%= options.date %> ✓ svg: <%= file.relative %>',
+            templateOptions: {
+                date: new Date()
+            }
+        }));
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ fonts
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('fonts', function() {
+        return gulp.src([
+            _.src + '/fonts/*'
+        ])
+        .pipe($.plumber())
+        .pipe(gulp.dest(_.dist + '/fonts'))
+        .pipe($.size()).pipe($.notify({
+            message: '<%= options.date %> ✓ copy: <%= file.relative %>',
+            templateOptions: {
+                date: new Date()
+            }
+        }));
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ img
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('img', function() {
+        return gulp.src([
+            _.src + '/img/**/*.{png,jpg,jpeg,gif,ico}'
+        ]).pipe($.plumber())
+        .pipe(
+            //$.cache(
+                $.imagemin({
+                    optimizationLevel: 3,
+                    progressive: true,
+                    interlaced: true
+                })
+            //)
+        )
+        .pipe(gulp.dest(_.dist + '/img')).pipe($.size()).pipe($.notify({
+            message: '<%= options.date %> ✓ img: <%= file.relative %>',
+            templateOptions: {
+                date: new Date()
+            }
+        }));
+    });
+
+
+
+    // gulp.task('img', function() {
+    //     return gulp.src([
+    //         _.src + '/img/**/*.{png,jpg,jpeg,gif,ico}',
+    //         _.vendor + '/2degrees_master_library/img/**/*.{png,jpg,jpeg,gif,ico}'
+    //     ]).pipe($.plumber())
+    //     .pipe(
+    //         // does some weird stuff on deploy
+    //         // $.cache(
+    //             $.imagemin({
+    //                 optimizationLevel: 3,
+    //                 progressive: true,
+    //                 interlaced: true
+    //             })
+    //         // )
+    //     )
+    //     .pipe(gulp.dest(_.build + '/img')).pipe($.size()).pipe($.notify({
+    //         message: '<%= options.date %> ✓ img: <%= file.relative %>',
+    //         templateOptions: {
+    //             date: new Date()
+    //         }
+    //     }));
+    // });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ html
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('useref', ['jshint'], function() {
+
+        var assets = $.useref.assets();
+
+        return gulp
+            .src([_.src + '/layouts/*.html'])
+            .pipe($.plumber())
+            .pipe(assets)
+            .pipe($.if('*predom.js', $.uglify()))
+            .pipe($.if('*postdom.js', $.uglify()))
+            .pipe($.if('*main.js', $.uglify()))
+            .pipe(assets.restore())
+            .pipe($.useref())
+            .pipe($.if('*.js', gulp.dest(_.tmpBuild + '/js'))) // this is a little whacky because the js has a rel path so its writing to _.tmpBuild + '/js/../js/predom.js'
+            .pipe($.if('*.html', gulp.dest(_.tmpBuild + '/layouts')))
+            .pipe($.size())
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ html: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
+
+    gulp.task('src-to-tmp-build', function() {
+
+        return gulp
+            .src([
+                _.src + '/**/*.html',
+                '!' + _.src + '/layouts/*.html',
+                '!' + _.src + '/vendor/**/*.html'
+            ])
+            .pipe(gulp.dest(_.tmpBuild))
+            .pipe($.size())
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ src-to-tmp-build: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
+
+    gulp.task('tmp-build-to-dist', ['layout-build'], function() {
+
+        return gulp
+            .src([
+                _.tmpBuild + '/js/*'
+            ])
+            .pipe(gulp.dest(_.dist + '/js'))
+            .pipe($.size())
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ tmp-build-to-dist: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ layout
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('layout', function () {
+        $.nunjucksRender.nunjucks.configure([_.src]);
+
+        return gulp.src([
+                _.src + '/**/*.html',
+                '!' + _.src + '/layouts/**/*.html',
+                '!' + _.src + '/pages/_templates/**/*.html',
+                '!' + _.src + '/vendor/**/*.html'
+            ])
+            .pipe($.nunjucksRender())
+            .pipe(gulp.dest(_.tmp))
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ layout: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
+
+    gulp.task('layout-build', ['useref', 'src-to-tmp-build'], function () {
+
+        // hack - because this task never finishes - even when it finishe...
+        gulp.on('stop', function () {
+            process.nextTick(function () {
+                process.exit(0);
+            });
+        });
+
+        $.nunjucksRender.nunjucks.configure([_.tmpBuild]);
+
+        return gulp.src([
+                _.src + '/**/*.html',
+                '!' + _.src + '/layouts/**/*.html',
+                '!' + _.src + '/vendor/**/*.html',
+                '!' + _.src + '/pages/_templates/**/*.html',
+                '!' + _.src + '/macros/**/*.html'
+            ])
+            .pipe($.nunjucksRender())
+            .pipe(gulp.dest(_.dist))
+            .pipe($.size())
+            .pipe($.notify({
+                message: '<%= options.date %> ✓ layout-build: <%= file.relative %>',
+                templateOptions: {
+                    date: new Date()
+                }
+            }));
+    });
+
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ bower (Inject Bower components)
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('wiredep', function() {
+        gulp.src(_.src + '/css/*.{sass,scss}').pipe($.wiredep.stream({
+            directory: _.src + '/vendor',
+            ignorePath: _.src + '/vendor/'
+        })).pipe(gulp.dest(_.src + '/css'));
+        gulp.src(_.src + '/*.html').pipe($.wiredep.stream({
+            directory: _.src + '/vendor',
+            ignorePath: _.src + '/'
+        })).pipe(gulp.dest(_.src));
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ connect
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('connect', ['layout'], function() {
+        $.connect.server({
+            root: [_.tmp, _.src],
+            livereload: true,
+            port: 8000
+        });
+    });
+
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ server
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('server', ['connect', 'styles'], function() {
+        gulp.start('localhost');
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ watch
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('watch', ['server'], function() {
+
+        // Live Reload
+        $.watch([
+            _.src + '/*.{html,txt}',
+            _.src + '/scss/*',
+            _.src + '/js/**/*.js',
+            _.src + '/img/**/*.{png,jpg,jpeg,gif,ico}',
+            '!' + _.src + '/vendor/**/*.js'
+        ], function(files) {
+            return files.pipe($.plumber()).pipe($.connect.reload());
+        });
+
+        // build
+        gulp.start('concat-predom');
+        gulp.start('concat-postdom');
+
+        // Watch html files
+        $.watch([_.src + '/**/*.html'], function() {
+            gulp.start('layout');
+        });
+
+        // Watch style files
+        $.watch([
+            _.src + '/scss/**/*'
+        ], function() {
+            gulp.start('styles');
+        });
+
+        // Watch bower files
+        $.watch('bower.json', function() {
+            gulp.start('wiredep');
+        });
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ clean
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('clean-dist', function (cb) {
+        return $.del([
+            _.dist + '/**/*',
+            _.tmp + '/**/*',
+            _.tmpBuild + '/**/*',
+        ], cb);
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ environ
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('localhost', function() {
+        $.shelljs.exec('open http://localhost:8000');
+    });
+    gulp.task('prod', function() {
+        $.shelljs.exec('open https://www.npmjs.org/package/generator-gulp-requirejs');
+    });
+    gulp.task('dev', function() {
+        $.shelljs.exec('open http://www.npmjs.org/package/generator-gulp-requirejs');
+    });
+    gulp.task('hml', function() {
+        $.shelljs.exec('open https://www.npmjs.org/package/generator-gulp-requirejs');
+    });
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ alias
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('clean', ['clean-dist']);
+    gulp.task('test', ['jsonlint', 'jshint']);
+    gulp.task('build', ['test', 'tmp-build-to-dist', 'styles-build', 'js-build', 'concat-predom-build', 'concat-postdom-build', 'img', 'svg', 'fonts']);
+
+    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //| ✓ default
+    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    gulp.task('default', function() {
+        gulp.start('build');
+    });
+
+}(require('gulp-param')(require('gulp'), process.argv), require('gulp-load-plugins')));

@@ -50,9 +50,10 @@ $RECYCLE.BIN/
 /.tmp-build
 
 # SS needs this
-# /dist/*
+/dist/*
 
 /src/css/*
+/src/js/vendor/*
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Misc
