@@ -9,11 +9,9 @@
 
     <link href="css/main.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="js/vendor-predom.js"></script>
-    <![endif]-->
+    <!-- build:js js/vendor-predom.js -->
+        <script src="../vendor/html5shiv/dist/html5shiv.js"></script>
+    <!-- endbuild -->
 </head>
 <body>
     <div id="wrapper">
@@ -26,9 +24,12 @@
 
     </div>
 
-    <!-- postdom js -->
-    <script src="js/vendor-postdom.js"></script>
-    <!-- main js -->
+    <!-- build:js js/vendor-postdom.js -->
+    <script src="../vendor/jquery/dist/jquery.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js js/main.js -->
     <script src="js/main.js"></script>
+    <!-- endbuild -->
 </body>
 </html>

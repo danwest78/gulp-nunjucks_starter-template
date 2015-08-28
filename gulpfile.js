@@ -95,68 +95,11 @@
           )
           .pipe($.jshint('.jshintrc'))
           .pipe($.jshint.reporter('default'))
-          .pipe($.concat('main.js'))
           .on('error', $.util.log)
           .pipe(gulp.dest(_.dist + '/js'))
           .pipe($.uglify())
           .pipe(gulp.dest(_.dist + '/js'))
           .pipe($.notify({ message: 'Scripts task complete' }));
-    });
-
-    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //| ✓ js predom
-    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-    gulp.task('concat-predom', function() {
-
-        // Add files here
-        return gulp.src([
-              _.src + '/vendor/html5shiv/dist/html5shiv.min.js'
-          ])
-          .pipe($.concat('vendor-predom.js'))
-          .pipe(gulp.dest(_.src + '/js'))
-          .on('error', $.util.log);
-    });
-
-    gulp.task('concat-predom-build', function() {
-
-        // Add files here
-        return gulp.src([
-              _.src + '/vendor/html5shiv/dist/html5shiv.min.js'
-          ])
-          .pipe($.concat('vendor-predom.js'))
-          .pipe(gulp.dest(_.dist + '/js'))
-          .pipe($.uglify())
-          .pipe(gulp.dest(_.dist + '/js'))
-          .on('error', $.util.log);
-    });
-
-    //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //| ✓ js postdom
-    //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-    gulp.task('concat-postdom', function() {
-
-        // Add files here
-        return gulp.src([
-              _.src + '/vendor/jquery/dist/jquery.min.js'
-          ])
-          .pipe($.concat('vendor-postdom.js'))
-          .pipe(gulp.dest(_.src + '/js'))
-          .on('error', $.util.log);
-    });
-
-    gulp.task('concat-postdom-build', function() {
-
-        // Add files here
-        return gulp.src([
-              _.src + '/vendor/jquery/dist/jquery.min.js'
-          ])
-          .pipe($.concat('vendor-postdom.js'))
-          .pipe(gulp.dest(_.dist + '/js'))
-          .pipe($.uglify())
-          .pipe(gulp.dest(_.dist + '/js'))
-          .on('error', $.util.log);
     });
 
 
@@ -223,30 +166,6 @@
     });
 
 
-
-    // gulp.task('img', function() {
-    //     return gulp.src([
-    //         _.src + '/img/**/*.{png,jpg,jpeg,gif,ico}',
-    //         _.vendor + '/2degrees_master_library/img/**/*.{png,jpg,jpeg,gif,ico}'
-    //     ]).pipe($.plumber())
-    //     .pipe(
-    //         // does some weird stuff on deploy
-    //         // $.cache(
-    //             $.imagemin({
-    //                 optimizationLevel: 3,
-    //                 progressive: true,
-    //                 interlaced: true
-    //             })
-    //         // )
-    //     )
-    //     .pipe(gulp.dest(_.build + '/img')).pipe($.size()).pipe($.notify({
-    //         message: '<%= options.date %> ✓ img: <%= file.relative %>',
-    //         templateOptions: {
-    //             date: new Date()
-    //         }
-    //     }));
-    // });
-
     //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //| ✓ html
     //'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -256,7 +175,7 @@
         var assets = $.useref.assets();
 
         return gulp
-            .src([_.src + '/layouts/*.html'])
+            .src([_.src + '/layouts/**/*.html'])
             .pipe($.plumber())
             .pipe(assets)
             .pipe($.if('*predom.js', $.uglify()))
@@ -264,7 +183,7 @@
             .pipe($.if('*main.js', $.uglify()))
             .pipe(assets.restore())
             .pipe($.useref())
-            .pipe($.if('*.js', gulp.dest(_.tmpBuild + '/js'))) // this is a little whacky because the js has a rel path so its writing to _.tmpBuild + '/js/../js/predom.js'
+            .pipe($.if('*.js', gulp.dest(_.tmpBuild))) // this is a little whacky because the js has a rel path so its writing to _.tmpBuild + '/js/../js/predom.js'
             .pipe($.if('*.html', gulp.dest(_.tmpBuild + '/layouts')))
             .pipe($.size())
             .pipe($.notify({
@@ -299,6 +218,7 @@
             .src([
                 _.tmpBuild + '/js/*'
             ])
+            .pipe($.uglify())
             .pipe(gulp.dest(_.dist + '/js'))
             .pipe($.size())
             .pipe($.notify({
@@ -415,10 +335,6 @@
             return files.pipe($.plumber()).pipe($.connect.reload());
         });
 
-        // build
-        gulp.start('concat-predom');
-        gulp.start('concat-postdom');
-
         // Watch html files
         $.watch([_.src + '/**/*.html'], function() {
             gulp.start('layout');
@@ -472,7 +388,7 @@
 
     gulp.task('clean', ['clean-dist']);
     gulp.task('test', ['jsonlint', 'jshint']);
-    gulp.task('build', ['test', 'tmp-build-to-dist', 'styles-build', 'js-build', 'concat-predom-build', 'concat-postdom-build', 'img', 'svg', 'fonts']);
+    gulp.task('build', ['test', 'tmp-build-to-dist', 'styles-build', 'js-build', 'img', 'svg', 'fonts']);
 
     //|**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //| ✓ default
