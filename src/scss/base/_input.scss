@@ -1,0 +1,15 @@
+input {
+	color: darken(color("grey"), 50%);
+	border-radius: 3px;
+	border: 0;
+	font-size: rem(18);
+	white-space: nowrap;
+	padding: 19px 20px;
+	display: block;
+	width: 100%;
+	margin-bottom: 10px;
+
+	@include placeholder {
+        color: color("grey");
+    }
+}

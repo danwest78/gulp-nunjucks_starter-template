@@ -128,10 +128,10 @@
 
     gulp.task('fonts', function() {
         return gulp.src([
-            _.src + '/fonts/*'
+            _.src + '/font/*'
         ])
         .pipe($.plumber())
-        .pipe(gulp.dest(_.dist + '/fonts'))
+        .pipe(gulp.dest(_.dist + '/font'))
         .pipe($.size()).pipe($.notify({
             message: '<%= options.date %> ✓ copy: <%= file.relative %>',
             templateOptions: {
@@ -303,7 +303,7 @@
 
     gulp.task('connect', ['layout'], function() {
         $.connect.server({
-            root: [_.tmp, _.src],
+            root: [_.tmp, _.src, _.src + '/pages'],
             livereload: true,
             port: 8000
         });

@@ -3,4 +3,10 @@
 // Vendor related stylesheets
 // These include vendor stylesheets pulled in through bower and config stylessheets required by those libraries.
 
-// @import
+@import
+"../vendor/bourbon/app/assets/stylesheets/bourbon",
+"../vendor/neat/app/assets/stylesheets/neat-helpers",
+"lib/_grid-settings",
+"../vendor/neat/app/assets/stylesheets/neat",
+"lib/h5bp-reset",
+"../vendor/normalize-scss/normalize";

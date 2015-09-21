@@ -1,0 +1,14 @@
+$colorScheme: (
+
+	"primary-brand1"          	: #ff0000,  // red
+	"primary-brand2"      		: #0042ff,  // blue
+	"primary-brand3"          	: #00a00f,  // green
+
+	"grey"						: #B2B2B2,
+	"white"						: #fff,
+	"black"						: #000,
+);
+
+@function color($ref) {
+	@return map-get($colorScheme, $ref);
+}

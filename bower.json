@@ -7,7 +7,19 @@
   "license": "Contributor License Agreement",
   "private": true,
   "dependencies": {
-    "jquery"            : "~1.11.2",
-    "html5shiv"            : "~3.7.3"
+    "html5-boilerplate": "~5.1.0",
+    "neat": "~1.7.2",
+    "bourbon": "~4.2.1",
+    "jquery": "~1.11.1",
+    "jquery-mobile": "~1.4.5",
+    "modernizr": "~2.8.3",
+    "polyholder": "~1.0.1",
+    "labelizr": ">=0.1.0",
+    "picturefill": "~2.1.0",
+    "normalize-scss": "~3.0.2"
+  },
+  "resolutions": {
+    "jquery": "~1.11.1",
+    "bourbon": "~4.2.1"
   }
 }

@@ -1,0 +1,27 @@
+%font-primary {
+  font-family: $font-primary;
+  /* Not Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: antialiased;
+  text-rendering: auto;
+}
+
+// %font-secondary {
+//   font-family: $font-secondary;
+//   /* Better Font Rendering =========== */
+//     -webkit-font-smoothing: antialiased;
+//     -moz-osx-font-smoothing: grayscale;
+//   text-rendering: auto;
+// }
+
+// %font-tertiary {
+//   font-family: $font-tertiary;
+//   /* Better Font Rendering =========== */
+//     -webkit-font-smoothing: antialiased;
+//     -moz-osx-font-smoothing: grayscale;
+//   text-rendering: optimizeLegibility;
+// }
+
+.text-centered {
+  text-align: center;
+}

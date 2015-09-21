@@ -1,5 +1,15 @@
 {% extends "layouts/pages.html" %}
+{% import "macros/context.html" as ctx %}
 
 {% block main %}
-  <p>Content goes here!</p>
+
+	{{ ctx.header('main') }}
+
+	<main class="container">
+		<h1>Site title</h1>
+  		<p>Content goes here!</p>
+  	</main>
+
+  	{% include "includes/footer.html" %}
+
 {% endblock %}

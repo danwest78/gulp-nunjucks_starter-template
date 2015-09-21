@@ -3,4 +3,6 @@
 // These stylesheets include mixins, functions, paths and variables.
 // As a rule of thumb they should not generate any CSS, but provide a toolset referenced by the rest of the library.
 
-// @import
+@import
+"tools/vars",
+"tools/color";

@@ -5,31 +5,55 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gulp - Nunjucks template</title>
+
+    <title>Template site</title>
+    <meta name="description" content="Site description">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="img/favicon/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/favicon/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/favicon/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/favicon/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="img/favicon/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="img/favicon/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="img/favicon/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="img/favicon/apple-touch-icon-152x152.png">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-196x196.png" sizes="196x196">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="img/favicon/favicon-128.png" sizes="128x128">
+    <meta name="application-name" content="Warehouse Mobile">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="img/favicon/mstile-144x144.png">
+    <meta name="msapplication-square70x70logo" content="img/favicon/mstile-70x70.png">
+    <meta name="msapplication-square150x150logo" content="img/favicon/mstile-150x150.png">
+    <meta name="msapplication-wide310x150logo" content="img/favicon/mstile-310x150.png">
+    <meta name="msapplication-square310x310logo" content="img/favicon/mstile-310x310.png">
 
     <link href="css/main.css" rel="stylesheet">
 
     <!-- build:js js/vendor-predom.js -->
-        <script src="../vendor/html5shiv/dist/html5shiv.js"></script>
+        <script src="../vendor/modernizr/modernizr.js"></script>
     <!-- endbuild -->
 </head>
 <body>
-    <div id="wrapper">
-        <header>
-        <a href="#" class="brand"><img src="http://placehold.it/200x100"></a>
-        <h1>Gulp - Nunjucks starter template</h1>
-      </header>
 
-        {% block main %}{% endblock %}
+    {% block main %}{% endblock %}
 
-    </div>
 
-    <!-- build:js js/vendor-postdom.js -->
-    <script src="../vendor/jquery/dist/jquery.js"></script>
+    <!-- build:js js/postdom.js -->
+        <script src="../vendor/jquery/dist/jquery.js"></script>
+        <script src="../vendor/jquery-mobile/js/jquery.mobile.define.js"></script>
+        <script src="../vendor/jquery-mobile/js/jquery.mobile.ns.js"></script>
+        <script src="../vendor/jquery-mobile/js/jquery.mobile.vmouse.js"></script>
+        <script src="../vendor/jquery-mobile/js/jquery.mobile.support.touch.js"></script>
+        <script src="../vendor/jquery-mobile/js/events/touch.js"></script>
+        <script src="../vendor/labelizr/labelizr.js"></script>
     <!-- endbuild -->
 
     <!-- build:js js/main.js -->
-    <script src="js/main.js"></script>
+        <script src="js/main.js"></script>
     <!-- endbuild -->
 </body>
 </html>

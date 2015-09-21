@@ -1,0 +1,36 @@
+// Lists
+ul, ol {
+	padding: 0;
+	margin: 0 0 rem(24);
+	list-style: none;
+}
+
+// Definition lists default styles
+dl {
+	margin-top: 0;
+	margin-bottom: rem(12);
+
+	dt, dd {
+		font-weight: normal;
+		margin: 0;
+		padding: 0;
+		max-width: 220px;
+	}
+	dt {
+		color: #888;
+	}
+	dd {
+		color: color("dark-grey");
+		margin-bottom: rem(12);
+	}
+
+	@include media($small) {
+		> * {
+			@include span-columns(6 fo 12);
+			@include omega(2n);
+		}
+		dt, dd {
+			margin-bottom: rem(12);
+		}
+	}
+}

@@ -1,0 +1,16 @@
+.block {
+	display: block;
+}
+
+.hide {
+	&.mobile {
+		@include media($mobile-only) {
+			display: none !important;
+		}
+	}
+	&.tablet {
+		@include media($medium) {
+			display: none !important;
+		}
+	}
+}

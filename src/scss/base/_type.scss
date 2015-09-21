@@ -1,0 +1,75 @@
+body,
+input,
+textarea {
+    @extend %font-primary;
+}
+
+body {
+
+}
+
+h1, .h1 {
+    @extend %font-primary;
+    font-size: rem(24);
+    line-height: rem(31);
+    margin: 0 0 rem(20);
+    font-weight: normal;
+
+    @include media($medium) {
+        font-size: rem(28);
+        line-height: rem(36);
+    }
+}
+
+h2, .h2 {
+    @extend %font-primary;
+    font-weight: 500;
+    font-size: rem(20);
+    line-height: rem(24);
+    margin: rem(36) 0 rem(16);
+}
+
+h3, .h3 {
+    @extend %font-primary;
+    font-size: rem(18);
+    line-height: rem(20);
+    margin: 0 0 rem(16);
+}
+
+h4, .h4 {
+    @extend %font-primary;
+    font-size: rem(16);
+    line-height: rem(20);
+    margin: 0 0 rem(16);
+}
+
+p, ul, dl, dt, a {
+    font-size: rem(18);
+    line-height: rem(24);
+}
+
+p, ul {
+    margin: rem(16) 0 rem(24);
+}
+
+//type colours
+h1, h2, h3, h4, h5 {
+    color: color("primary-brand1");
+}
+
+a {
+    color: color("primary-brand2");
+    text-decoration: none;
+
+    &:hover {
+        color: darken(color("primary-brand2"), 50%);
+    }
+}
+
+p {
+    color: color("black");
+}
+
+hr {
+    border-color: color("grey");
+}

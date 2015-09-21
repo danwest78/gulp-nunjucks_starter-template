@@ -1,0 +1,34 @@
+// Icon helpers
+
+[class*="icon-"], .icon {
+	&:before, &:after {
+		font-family: "icomoon";
+		speak: none;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+
+		// Better Font Rendering =========== */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+
+$icons:
+
+("burger" 									"\e600"),
+("close" 									"\e601");
+
+@each $val in $icons {
+	$name: nth($val, 1);
+	$content: nth($val, 2);
+
+	.icon-#{$name} {
+		&:before {
+			content: $content;
+		}
+	}
+}

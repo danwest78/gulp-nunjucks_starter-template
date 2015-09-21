@@ -3,4 +3,10 @@
 // These stylesheets include custom resets, Element defaults and base/global styles.
 // As a rule of thumb the stylesheets here should target elements not classes/ids/attr etc.
 
-// @import
+@import
+"base/font-face",
+"base/global",
+"base/type",
+"base/images",
+"base/input",
+"base/lists";
